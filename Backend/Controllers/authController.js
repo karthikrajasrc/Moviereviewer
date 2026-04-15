@@ -87,7 +87,28 @@ const authController = {
         catch (error) {
             return res.status(500).json({ Message: "Error found on Login!!" });
         }
-    },
+    },updatePassword: async (req, res) => {
+        try {
+            const {Email, newPassword, confirmPassword } = req.body;
+
+            const user = await User.findOne({Email});
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
+            if (newPassword !== confirmPassword) {
+                return res.status(400).json({ message: "Passwords do not match" });
+            }
+
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            user.Password = hashedPassword;
+            await user.save();
+
+            res.status(200).json({ message: "Password updated successfully" });
+        } catch (error) {
+            res.status(500).json({ message: "Error updating password", error: error.message });
+        }
+    }
 
 }
 

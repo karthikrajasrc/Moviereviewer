@@ -2,6 +2,7 @@ const express = require('express');
 const authRouter = require('./Routers/authRouter');
 const app = express();
 const cors = require('cors');
+const commentRouter = require('./Routers/commentRouter');
 
 app.use(express.json());
 
@@ -11,6 +12,7 @@ app.use(cors({
 }));
 
 app.use("/auth", authRouter);
+app.use("/comment", commentRouter);
 
 
 module.exports = app;
