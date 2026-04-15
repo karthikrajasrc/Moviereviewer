@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import instance from "../Protectedinstances/axios";
 import toast from "react-hot-toast";
+import { useContext } from "react";
+import { AuthContext } from "../../authProvider";
 
 
 const Login = () => {
@@ -11,15 +13,17 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [forgotForm, setForgotForm] = useState({ Email: "", newPassword: "", confirmPassword: "" });
     const navigate = useNavigate();
+    const { setUser } = useContext(AuthContext);
 
     
     const handlelogin = async () => {
         try {
             const res = await instance.post("/auth/login", { Email: authForm.Email, Password: authForm.Password });
             localStorage.setItem("token", res.data.Token);
+            setUser(res.data.user);
             toast.success(res.data.Message);
-            navigate("/home")
             setAuthForm({ userName: "", passWord: "" });
+            navigate("/home")
         }
         catch (error){
             const msg = error.response?.data?.Message || "Something went wrong";
@@ -27,8 +31,26 @@ const Login = () => {
         }
     }
 
-    const handleforgot = () => {
+    const handleforgot = async () => {
+          try {
+    const res = await instance.put("/auth/update", {
+      Email: forgotForm.Email,
+      newPassword: forgotForm.newPassword,
+      confirmPassword: forgotForm.confirmPassword
+    });
 
+    toast.success(res.data.message);
+
+
+    setForgotForm({ userName: "", newPassword: "", confirmPassword: "" });
+
+
+    setShowPassword(false);
+
+  } catch (error) {
+    const msg = error.response?.data?.message || "Something went wrong";
+    toast.error(msg);
+  }
     }
 
 

@@ -3,6 +3,8 @@
     import axios from "axios";
     import { useEffect, useState } from "react";
     import { Link, useNavigate, useParams } from "react-router";
+import instance from "../Protectedinstances/axios";
+import toast from "react-hot-toast";
 
 
 
@@ -12,45 +14,50 @@
 
         const [movies, setMovies] = useState(null); 
         const [rating, setrating] = useState(0)
-        const [useName, setuseName] = useState("");
-        const [useComments, setComments] = useState("")
-        const [reviews, setreviews] = useState([]);
+        const [commentForm, setCommentForm] = useState({ Name: "", comment: "" });
+        const [comments, setComments] = useState([]);
 
 
         const { id } = useParams();
 
 
 
-                const handleSubmit = (e) => {
+                const handleSubmit = async(e) => {
                     e.preventDefault();
+                    try {
+                        const res = await instance.post("/comment/add", {
+                            Name: commentForm.Name,
+                            Star: rating,
+                            Comment: commentForm.comment,
+                            movieId: id
+                        });
 
-            const info = {
-                name: useName,
-                rated: rating,
-                comment: useComments
-            };
-        
-                    const update = ([...reviews, info]);
-                    setreviews(update);
-
-                    localStorage.setItem(`reviewed_${id}`, JSON.stringify(update));
-
-
-            setuseName("");
-            setrating(0);
-            setComments("");
-
+                        const res2 = await instance.get(`/comment/${id}`);
+                        setComments(res2.data.comments);
+                        
+                        setCommentForm({ Name: "", comment: "" });
+                        setrating(0);
+                        toast.success(res.data.message);
+                    }
+                    catch (error) {
+                        const msg = error.response?.data?.message || "Something went wrong";
+                        toast.error(msg);
+                    }
         }
 
                 useEffect(() => {
-            if (id) {
-                const stored = localStorage.getItem(`reviewed_${id}`);
-           
-        
-            if (stored) {
-                setreviews(JSON.parse(stored));
-                 }
-            }
+                    const handleFetch = async (id) => {
+                        try {
+                            const res = await instance.get(`/comment/${id}`);
+                            setComments(res.data.comments);
+                            console.log(res.data.comments);
+                        }
+                        catch (error) {
+                            const msg = error.response?.data?.message || "Something went wrong";
+                            toast.error(msg);
+                        }
+                    }
+                    handleFetch(id);
         }, [id]);
 
 
@@ -67,8 +74,6 @@
         <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-yellow-400"></div>
         </div>);
         }
-        
-        console.log(movies);
 
         const handleBack = () => {
             navigate(-1);
@@ -105,14 +110,14 @@
                         <form onSubmit={handleSubmit}>
                         <div className="border px-4 py-4 xl:w-[400px] rounded-xl mt-5 border-[oklch(68.6%_0.179_58.318)] bg-[oklch(20.9%_0.042_264.695)]">
                             <h1 className="font-bold lg:text-[22px] text-[18px] text-center my-2">Rate The Movie</h1>
-                            <h1 className="text-center lg:text-[18px] text-[15px]">Name: <input placeholder="Enter Your Name..." className="border border-gray-500 p-1 rounded-xl mt-3 text-center align-center items-center" value={useName} required onChange={e => setuseName(e.target.value)} /></h1> 
+                                <h1 className="text-center lg:text-[18px] text-[15px]">Name: <input placeholder="Enter Your Name..." className="border border-gray-500 p-1 rounded-xl mt-3 text-center align-center items-center" value={commentForm.Name} required onChange={e => setCommentForm({ ...commentForm, Name: e.target.value })} /></h1> 
 
 
                             <h1 className="text-center lg:text-[20px] text-[18px] mt-6 select-none">Rating:{" "}{[1, 2, 3, 4, 5].map(star => (<span key={star} onClick={() => setrating(star)} className="cursor-pointer"><FontAwesomeIcon
             icon={faStar}
             className={star <= rating ? "text-yellow-400" : "text-gray-400 hover:text-yellow-400"}
                             /></span>))}</h1>
-                                <h1 className="text-center lg:text-[18px] text-[15px] mt-5 flex flex-col"> Comment: <textarea placeholder="Enter Your Comments..." className="border border-gray-500 p-1 rounded-xl mt-3 text-center align-center items-center" value={useComments} cols={25} onChange={e => setComments(e.target.value)}/></h1>
+                                <h1 className="text-center lg:text-[18px] text-[15px] mt-5 flex flex-col"> Comment: <textarea placeholder="Enter Your Comments..." className="border border-gray-500 p-1 rounded-xl mt-3 text-center align-center items-center" value={commentForm.comment} cols={25} onChange={e => setCommentForm({...commentForm, comment: e.target.value})}/></h1>
                                 <div className="text-center">
                                     <button className="text-black xl:text-[23px] mt-7 border border-gray-400 px-2 py-0.2 rounded-xl bg-white hover:scale-108 duration-100 ease-in-out" type="submit">Submit</button>
                                 </div>
@@ -125,12 +130,12 @@
                 </div>
                 <div className="mt-15 lg:ml-15">
                 <div className="flex lg:flex-row flex-col lg:gap-5 w-full flex-wrap ">
-                    {reviews.map((rate, index) => (<div key={index} className="lg:gap-10 mx-4 mt-4 border border-[oklch(68.6%_0.179_58.318)] rounded-xl px-3 py-4 text-white bg-[oklch(20.9%_0.042_264.695)]"><h1 className="lg:text-[22px] font-semibold py-1">Name: {rate.name}</h1>
-                        <h2 className="lg:text-[22px] font-semibold py-1">Ratings: {rate.rated}<span className="text-[oklch(82.8%_0.189_84.429)]"><FontAwesomeIcon icon={faStar} /></span></h2>
-                        <p className="lg:text-[22px] font-semibold py-1">Commets: <span className="lg:text-[18px] text-[15px]">{rate.comment}</span></p>
+                    {comments.map((rate) => (<div key={rate._id} className="lg:gap-10 mx-4 mt-4 border border-[oklch(68.6%_0.179_58.318)] rounded-xl px-3 py-4 text-white bg-[oklch(20.9%_0.042_264.695)]"><h1 className="lg:text-[22px] font-semibold py-1">Name: {rate.Name}</h1>
+                        <h2 className="lg:text-[22px] font-semibold py-1">Ratings: {rate.Star}<span className="text-[oklch(82.8%_0.189_84.429)]"><FontAwesomeIcon icon={faStar} /></span></h2>
+                        <p className="lg:text-[22px] font-semibold py-1">Commets: <span className="lg:text-[18px] text-[15px]">{rate.Comment}</span></p>
                     </div>))}
                     </div>
-                    </div>
+                    </div> 
             </div>
             <div>
                                 <footer>

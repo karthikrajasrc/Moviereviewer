@@ -58,9 +58,9 @@ const Review = () => {
   return (
     <>
       <div className="flex justify-center mt-15">
-        <input id="search" placeholder="Search Movie..." className="border border-white-200 text-gray-400 lg:text-[22px] text-[18px] lg:w-[500px] px-2 py-1 rounded-xl" value={search} onChange={e => setSerach(e.target.value)}></input>
+        <input id="search" placeholder="Search Movie..." className="border border-white-200 text-gray-400 lg:text-[22px] text-[18px] lg:w-125 px-2 py-1 rounded-xl" value={search} onChange={e => setSerach(e.target.value)}></input>
       </div>
-      <div className="flex flex-row flex-wrap px-2 lg:gap-[15px] gap-[5px] justify-center mt-5">
+      <div className="flex flex-row flex-wrap px-2 lg:gap-3.75 gap-1.25 justify-center mt-5">
       <div className="text-white">
           <select className="text-black bg-white py-1 px-1 rounded-lg text-[15px]"
         value={opgenre}    onChange={e => setopgenre(e.target.value)}>
@@ -96,7 +96,7 @@ const Review = () => {
       <div className="text-white grid lg:grid-cols-4 xl:grid-cols-5 md:grid-cols-3 grid-cols-2 w-full lg:gap-7 gap-0 mt-10 justify-items-center" id="rating">
         {filteredmoview.length === 0 ? (<h1 className="col-span-5 text-center text-2xl my-40 ">
       No movies found for your search!!
-    </h1>) : (filteredmoview.map((top, index) => (<div key={`${top.id}-${index}`} className="flex flex-col items-center hover:scale-107 duration-100 ease-in-out border border-[oklch(10.9%_0.041_260.031)] bg-[oklch(18.9%_0.042_264.695)] rounded-2xl py-2 mt-3 lg:h-[440px] md:h-[350px] md:max-w-[220px] h-[320px] w-full max-w-[155px] lg:max-w-[270px] items-center" >
+    </h1>) : (filteredmoview.map((top, index) => (<div key={`${top.id}-${index}`} className="flex flex-col hover:scale-107 duration-100 ease-in-out border border-[oklch(10.9%_0.041_260.031)] bg-[oklch(18.9%_0.042_264.695)] rounded-2xl py-2 mt-3 lg:h-110 md:h-87.5 md:max-w-55 h-80 w-full max-w-38.75 lg:max-w-67.5 items-center" >
                   <div onClick={() => handleclick(top.id)}> 
                   <img src={`https://image.tmdb.org/t/p/w500${top.poster_path}`} className="lg:w-[220px] md:w-[180px] md:h-[220px] w-[130px] h-[170px] lg:h-[300px] rounded-xl"/>
                       <h1 className="lg:text-[18px] xl:text-[18px] md:text-[18px] text-[15px] lg:w-[200px] md:w-[180px] w-[120px] text-center pt-2">{top.title}</h1>
@@ -114,13 +114,13 @@ const Review = () => {
                       <h1 className="lg:text-[22px]  text-[19px] font-bold pb-3">Moview Review</h1>
                       <p className="lg:text-[18px] text-[15px] mx-2">Search thousands of movies, explore detailed information, and share your ratings with an interactive star-based system — all in one place.</p>
                   </div>
-                  <div className="lg:w-[400px] text-white text-center list-none pb-3">
+                  <div className="lg:w-100 text-white text-center list-none pb-3">
                       <ul className="lg:text-[22px] text-[19px] font-bold">Quick Links</ul>
                       <li className="lg:text-[18px] text-[15px] mx-2"><a href="#search">Search</a></li>
                       <li className="lg:text-[18px] text-[15px] mx-2"><Link to={"/"}>Home</Link></li>
                       <li className="lg:text-[18px] text-[15px] mx-2"><a href="#rating">Rating</a></li>
                   </div>
-                  <div className="lg:w-[400px] text-white text-center">
+                  <div className="lg:w-100 text-white text-center">
                       <h1 className="lg:text-[22px] text-[19px] font-bold pb-3">Contact</h1>
                       <h2 className="lg:text-[18px] text-[15px] mx-2">Email us: moviereview@gmail.com</h2>
                       </div>
